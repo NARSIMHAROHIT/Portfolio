@@ -1,0 +1,23 @@
+artifact_path: /Users/rohit/Desktop/LLM_PORTFOLIO/Portfolio/simple-ML-model/model-deployment/mlruns/1/models/m-3f76da6d81f047e487f02d155dde009a/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.2
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.9.0
+model_id: m-3f76da6d81f047e487f02d155dde009a
+model_size_bytes: 177230
+model_uuid: m-3f76da6d81f047e487f02d155dde009a
+prompts: null
+run_id: d018ea3e2c2d43d98dade7b45c0a084d
+utc_time_created: '2026-02-04 04:04:55.960231'
