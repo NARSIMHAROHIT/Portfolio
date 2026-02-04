@@ -1,0 +1,20 @@
+Machine learning is a subset of artificial intelligence that enables systems to learn from data.
+Deep learning uses neural networks with multiple layers to process complex patterns.
+Natural language processing helps computers understand and generate human language.
+Computer vision enables machines to interpret and understand visual information from the world.
+Reinforcement learning trains agents to make decisions through trial and error.
+Supervised learning uses labeled data to train models for classification and regression tasks.
+Unsupervised learning finds patterns in data without explicit labels or guidance.
+Transfer learning allows models trained on one task to be adapted for related tasks.
+Python is a popular programming language for data science and machine learning applications.
+TensorFlow and PyTorch are leading frameworks for building deep learning models.
+The Transformer architecture revolutionized natural language processing in 2017.
+GPT models use transformers to generate human-like text based on input prompts.
+BERT introduced bidirectional training of transformers for better language understanding.
+Convolutional neural networks excel at processing grid-like data such as images.
+Recurrent neural networks are designed to handle sequential data like time series.
+Attention mechanisms help models focus on relevant parts of the input data.
+Embeddings convert categorical data into dense vector representations.
+Gradient descent is an optimization algorithm used to train neural networks.
+Overfitting occurs when a model learns training data too well and fails on new data.
+Cross-validation helps assess model performance and prevent overfitting.
