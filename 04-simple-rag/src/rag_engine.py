@@ -125,16 +125,16 @@ class RAGEngine:
     def query(self,
               question: str,
               top_k: int = 3,
-              llm_provider: str = 'grok',
-              api_key: Optional[str] = None) -> Dict:
+              llm_provider: str = 'groq',
+              api_key: str = None) -> Dict:
         """
         Query the RAG system
         
         Args:
             question: User question
             top_k: Number of chunks to retrieve
-            llm_provider: LLM to use ('grok' or 'mock')
-            api_key: API key for LLM
+            llm_provider: LLM to use ('groq')
+            api_key: API key for LLM (required)
             
         Returns:
             Dict with answer, sources, and retrieved chunks
@@ -157,10 +157,10 @@ class RAGEngine:
         
         context = "\n\n".join(retrieved_chunks)
         
-        if llm_provider == 'mock' or not api_key:
-            answer = self._mock_llm_response(question, context)
-        else:
-            answer = self._call_llm(question, context, llm_provider, api_key)
+        if not api_key:
+            raise ValueError("API key is required")
+        
+        answer = self._call_llm(question, context, llm_provider, api_key)
         
         return {
             'answer': answer,
@@ -222,59 +222,46 @@ class RAGEngine:
         Returns:
             Generated answer
         """
-        prompt = f"""Answer the question based on the context below. If you cannot answer based on the context, say "I don't have enough information to answer this question."
-
-Context:
+        logger.info(f"Calling LLM with provider: '{provider}'")
+        
+        system_prompt = "You are a helpful assistant that answers questions based on the provided context. If the context doesn't contain enough information to answer the question, say so clearly."
+        
+        user_prompt = f"""Context:
 {context}
 
 Question: {question}
 
-Answer:"""
+Please answer the question based only on the context provided above."""
         
         try:
-            if provider == 'grok':
-                response = requests.post(
-                    'https://api.x.ai/v1/chat/completions',
-                    headers={
-                        'Authorization': f'Bearer {api_key}',
-                        'Content-Type': 'application/json'
-                    },
-                    json={
-                        'model': 'grok-beta',
-                        'messages': [
-                            {'role': 'user', 'content': prompt}
-                        ],
-                        'max_tokens': 500,
-                        'temperature': 0.7
-                    },
-                    timeout=30
-                )
-                
-                if response.status_code == 200:
-                    return response.json()['choices'][0]['message']['content']
-                else:
-                    logger.error(f"LLM API error: {response.status_code}")
-                    return f"Error calling LLM: {response.status_code}"
+            response = requests.post(
+                'https://api.groq.com/openai/v1/chat/completions',
+                headers={
+                    'Authorization': f'Bearer {api_key}',
+                    'Content-Type': 'application/json'
+                },
+                json={
+                    'model': 'llama-3.3-70b-versatile',
+                    'messages': [
+                        {'role': 'system', 'content': system_prompt},
+                        {'role': 'user', 'content': user_prompt}
+                    ],
+                    'max_tokens': 500,
+                    'temperature': 0.7
+                },
+                timeout=30
+            )
             
+            if response.status_code == 200:
+                return response.json()['choices'][0]['message']['content']
             else:
-                return "Unsupported LLM provider"
+                logger.error(f"LLM API error: {response.status_code}")
+                logger.error(f"Response: {response.text}")
+                return f"Error calling LLM (status {response.status_code}): {response.text[:200]}"
         
         except Exception as e:
             logger.error(f"Error calling LLM: {e}")
             return f"Error: {str(e)}"
-    
-    def _mock_llm_response(self, question: str, context: str) -> str:
-        """
-        Mock LLM response for testing without API
-        
-        Args:
-            question: User question
-            context: Retrieved context
-            
-        Returns:
-            Mock answer
-        """
-        return f"[MOCK RESPONSE] Based on the provided context, here's what I found relevant to your question: {question}\n\nThe context contains information that could help answer this. In a real implementation with an LLM API, this would be a proper generated answer."
     
     def get_statistics(self) -> Dict:
         """

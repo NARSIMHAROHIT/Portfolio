@@ -50,7 +50,7 @@ def query(
     question: str = typer.Argument(..., help="Question to ask"),
     persist_dir: str = typer.Option("./chroma_db", help="Database directory"),
     top_k: int = typer.Option(3, "--top-k", "-k", help="Number of chunks to retrieve"),
-    api_key: str = typer.Option(None, "--api-key", help="Grok API key"),
+    api_key: str = typer.Option(None, "--api-key", help="Groq API key"),
 ):
     """
     Query the RAG system
@@ -67,7 +67,7 @@ def query(
     console.print(f"\n[bold]Question:[/bold] {question}")
     console.print(f"[dim]Searching {stats['total_chunks']} chunks...[/dim]\n")
     
-    provider = 'mock' if not api_key else 'grok'
+    provider = 'mock' if not api_key else 'groq'
     
     result = rag.query(
         question,
@@ -170,7 +170,7 @@ def info():
     console.print("  - PDF, TXT, HTML document support")
     console.print("  - ChromaDB vector storage")
     console.print("  - Semantic search with embeddings")
-    console.print("  - Grok API integration (optional)")
+    console.print("  - Groq API integration (optional)")
 
 
 if __name__ == "__main__":

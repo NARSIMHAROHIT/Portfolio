@@ -82,17 +82,14 @@ def main():
         st.markdown("---")
         
         st.subheader("API Configuration")
-        api_key = st.text_input(
-            "Grok API Key (optional)",
-            type="password",
-            help="Leave empty to use mock responses"
-        )
-        
-        use_mock = st.checkbox(
-            "Use mock LLM (no API needed)",
-            value=not bool(api_key)
-        )
-        
+    
+    api_key = st.sidebar.text_input(
+        "Groq API Key",
+        type="password",
+        help="Enter your Groq API key"
+    )
+    
+    with st.sidebar:
         st.markdown("---")
         
         st.subheader("Document Upload")
@@ -201,18 +198,21 @@ def main():
         with col1:
             if st.button("Ask", type="primary"):
                 if question.strip():
+                    if not api_key:
+                        st.error("Please enter your Groq API key in the sidebar")
+                        return
+                    
                     st.session_state.chat_history.append({
                         'role': 'user',
                         'content': question
                     })
                     
                     with st.spinner("Thinking..."):
-                        provider = 'mock' if use_mock else 'grok'
                         result = st.session_state.rag_engine.query(
                             question,
                             top_k=3,
-                            llm_provider=provider,
-                            api_key=api_key if not use_mock else None
+                            llm_provider='groq',
+                            api_key=api_key
                         )
                     
                     st.session_state.chat_history.append({
@@ -278,21 +278,13 @@ def main():
         - Supports multiple file formats (PDF, TXT, HTML)
         - Local vector database (ChromaDB)
         - Semantic search with embeddings
-        - Optional Grok API integration
-        - Mock mode for testing without API
-        
-        ### Mock Mode
-        
-        Enable "Use mock LLM" to test without an API key. The system will:
-        - Still retrieve relevant chunks
-        - Show mock responses instead of real LLM answers
-        - Useful for testing and learning
+        - Groq API integration for fast LLM responses
         
         ### Technical Details
         
         - **Embeddings**: sentence-transformers (all-MiniLM-L6-v2)
         - **Vector DB**: ChromaDB (local, persistent)
-        - **LLM**: Grok API (optional)
+        - **LLM**: Groq API (llama-3.3-70b-versatile)
         - **Chunking**: 500 words with 50 word overlap
         """)
 
